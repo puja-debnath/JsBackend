@@ -1,0 +1,29 @@
+{
+  "name": "jsbackend",
+  "version": "1.0.0",
+  "description": "working in backend with JavaScript",
+  "main": "Server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node Server.js",
+     "dev": "nodemon Server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puja-debnath/JsBackend.git"
+  },
+  "keywords": [
+    "Node"
+  ],
+  "author": "Puja Debnath",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/puja-debnath/JsBackend/issues"
+  },
+  "homepage": "https://github.com/puja-debnath/JsBackend#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
