@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "working in backend with JavaScript",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "start": "node Server.js",
     "dev": "nodemon  -r dotenv/config  --experimental-json-modules src/index.js"
-    
-  },   
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/puja-debnath/JsBackend.git"
@@ -23,6 +22,7 @@
   },
   "homepage": "https://github.com/puja-debnath/JsBackend#readme",
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
