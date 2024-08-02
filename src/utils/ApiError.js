@@ -14,8 +14,8 @@ class ApiError extends Error{
 
 
         //to find in which file there is error 
-        if(statck){
-           this.stack = statck
+        if(stack){
+           this.stack = stack
         }else{
             Error.captureStackTrace(this,this.constructor)
         }
