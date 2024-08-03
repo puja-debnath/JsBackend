@@ -1,10 +1,15 @@
+// The asyncHandler function you provided is a middleware function that helps handle asynchronous operations
+//  in Express.js routes. It is a wrapper function that takes a request handler function as an argument and
+//   returns a new function that can be used as a middleware in your Express.js application.
+
 const asyncHandler = (RequestHandler) => {
-    (req,res,next) =>{
+  return (req,res,next) =>{
               Promise.resolve(RequestHandler(req,res,next))
               .catch((error) =>next(error))
     }
 
 }
+
 
 export {asyncHandler}
 

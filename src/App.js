@@ -20,7 +20,9 @@ app.use(cookieparser())
 import userRouter from "./Routes/user.routes.js"
 //sincer routers are in another file we havve to use middleware to use route
 
-app.use("./users",userRouter)
+
+//http://localhost:3000/users/register
+app.use("/api/v1/users",userRouter)
 
 
 
