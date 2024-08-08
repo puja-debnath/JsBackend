@@ -24,7 +24,7 @@ const UserSchema = new Schema({
         trim:true,
         index:true
     },
-    avater:{
+    avatar:{
         type:String, //clooudinary url
         required:true
     },
@@ -55,7 +55,7 @@ const UserSchema = new Schema({
 UserSchema.pre("save", async function(next) {
     //if we dont use if then with every change it will update the password everytime
     if(!this.isModified("password")) return next()
-      this.password = bcrypt.hash(this.password,10)
+      this.password =await bcrypt.hash(this.password,10)
     next()
 })
 

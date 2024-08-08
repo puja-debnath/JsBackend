@@ -2,14 +2,12 @@
 //  in Express.js routes. It is a wrapper function that takes a request handler function as an argument and
 //   returns a new function that can be used as a middleware in your Express.js application.
 
-const asyncHandler = (RequestHandler) => {
-  return (req,res,next) =>{
-              Promise.resolve(RequestHandler(req,res,next))
-              .catch((error) =>next(error))
-    }
-
+const asyncHandler = (requestHandler) => {
+  return (req, res, next) => {
+      Promise.resolve(requestHandler(req, res, next))
+      .catch((err) => next(err))
+  }
 }
-
 
 export {asyncHandler}
 

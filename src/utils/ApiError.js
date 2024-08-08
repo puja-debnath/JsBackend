@@ -3,7 +3,7 @@ class ApiError extends Error{
        statusCode,
        message="something went WRONG",
        errors=[], // if there are multiple error use array
-       statck= ""
+       stack= ""
     ){
         super(message)  //  which we want to override
         this.statusCode = statusCode,
