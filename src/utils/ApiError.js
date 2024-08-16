@@ -3,6 +3,8 @@ class ApiError extends Error{
        statusCode,
        message="something went WRONG",
        errors=[], // if there are multiple error use array
+      // The stack property contains a stack trace of the error,
+       // which is useful for debugging. It shows the sequence of function calls that led to the error,
        stack= ""
     ){
         super(message)  //  which we want to override
