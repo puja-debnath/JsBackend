@@ -72,8 +72,8 @@ const registerUser = asyncHandler(async (req,res) =>{
    //checking user image and coverimage
   // multer give req.files access to all files, using the multer middleware 
   //req.files?avatar constain so may properties file name,size,type we only need 1st
-
-      const avatarLocalPath = req.files?.avatar[0]?.path
+ 
+      const avatarLocalPath = req.files?.avatar[0]?.path  //req.files cause there are multiple files 
             if(!avatarLocalPath){
         throw new ApiError(400,"Avatar file is required")
    }
@@ -137,9 +137,7 @@ const loginUser = asyncHandler(async (req,res) => {
     const user = await User.findOne({
         $or: [{username}, {email}]
     })
-    console.log("-------------------")
-    console.log(User.isPasswordCorrect(password)+"---------")
-    console.log(user.username)
+ 
 
     if (!user) {
         throw new ApiError(404, "user does not exist")
@@ -185,7 +183,7 @@ const logOutUser = asyncHandler(async (req,res) =>{
             refreshToken:undefined
            }
         },
-        {new : true}
+        {new : true} //return the  information after updation
       )
 
       const options = {
@@ -244,9 +242,106 @@ const refreshAccessToken = asyncHandler(async (req,res) =>{
 
 })
 
+const changeCurrentPassword = asyncHandler(async(req,res) =>{
+         //req.cookies?.password || req.body?.password
+    const {oldPassword,newPassword} = req.body
+    const user = await User.findById(req.user?._id)
+    
+   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+    if(!isPasswordCorrect){
+        throw new ApiError(401,"user doesnot exist")
+    }
+    user.password = newPassword // password is changed , now save it 
+    await user.save({validateBeforeSave:false}) //since it ocming from db use await, {} for not change anything 
+    
+    return res
+    .status(200)
+    .json(new ApiResponse(200,{},"password updated successfully"))
+
+})
+
+const getCurrentUser = asyncHandler(async (req,res) =>{
+    console.log(req.user+"-----------------")
+   return res
+         .status(200)
+         .json(200,req.user,"current user fetched successfully")
+  
+})
+
+const updateAccountDetails = asyncHandler(async (req,res) =>{
+     //to update any file always create different files and end points
+     const{fullName,email} = req.body
+     if(!(fullName || email)){
+        throw new ApiError(401,"All the fields are reuqired")
+     }
+    const user =  await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+                fullName,
+                email //both are right way to write email:newemail
+            }
+        },
+        {new:true}
+     ).select("-password")
+
+     return res
+     .status(200)
+     .json(
+       new ApiResponse(200,user,"Account details updated successfully")
+     )
+
+})
+
+const updateUserAvatar = asyncHandler(async(req,res) =>{
+     const avatarLocalPath  =   req.file?.path
+     if(!avatarLocalPath){throw new ApiError(400,"avatar file is missing")}
+
+     const avatar = await UploadOnCloudinary(avatarLocalPath)
+     if(!avatar.url){throw new ApiError(400,"something went wrong while uploading on cloudinary")}
+
+     const user = await User.findByIdAndUpdate(
+        req.user?._id,{
+            $set:{
+                avatar:avatar.url  //since we only need to change the avatar 
+            }
+        },{new:true}
+     ).select("-password")
+   
+     return res
+     .status(200)
+     .json(new ApiResponse(200,user,"avatar updated successfully"))
+
+})
+
+const updateUsercoverImage = asyncHandler(async(req,res) =>{
+    const coverImageLocalPath  =   req.file?.path
+    if(!coverImageLocalPath){throw new ApiError(400,"coverImage file is missing")}
+
+    const coverImage = await UploadOnCloudinary(coverImageLocalPath)
+    if(!coverImage.url){throw new ApiError(400,"something went wrong while uploading coverImage on cloudinary")}
+
+    const user = await User.findByIdAndUpdate(
+       req.user?._id,{
+           $set:{
+            coverImage:coverImage.url  //since we only need to change the avatar 
+           }
+       },{new:true}
+    ).select("-password")
+  
+    return res
+    .status(200)
+    .json(new ApiResponse(200,user,"coverImage updated successfully"))
+
+})
 export {
     registerUser,
     loginUser,
     logOutUser,
-    refreshAccessToken
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser,
+    updateAccountDetails,
+    updateUserAvatar,
+    updateUsercoverImage
 }
