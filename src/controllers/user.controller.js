@@ -4,7 +4,7 @@ import { User } from "../models/user.model.js"
 import {UploadOnCloudinary} from "../utils/cloudinary.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
-
+import fs from "fs"
 
 //to create tokens
 const generateAccessAndRefreshToken = async(userId) =>{
@@ -242,6 +242,7 @@ const refreshAccessToken = asyncHandler(async (req,res) =>{
 
 })
 
+
 const changeCurrentPassword = asyncHandler(async(req,res) =>{
          //req.cookies?.password || req.body?.password
     const {oldPassword,newPassword} = req.body
@@ -294,8 +295,11 @@ const updateAccountDetails = asyncHandler(async (req,res) =>{
 })
 
 const updateUserAvatar = asyncHandler(async(req,res) =>{
+
      const avatarLocalPath  =   req.file?.path
      if(!avatarLocalPath){throw new ApiError(400,"avatar file is missing")}
+
+     //delete the old file
 
      const avatar = await UploadOnCloudinary(avatarLocalPath)
      if(!avatar.url){throw new ApiError(400,"something went wrong while uploading on cloudinary")}
@@ -334,6 +338,84 @@ const updateUsercoverImage = asyncHandler(async(req,res) =>{
     .json(new ApiResponse(200,user,"coverImage updated successfully"))
 
 })
+
+const getUserChannelprofile = asyncHandler(async(req,res) =>{
+    const {username} = req.params
+    if(!username?.trim()){ // in case of undefined it will pass, use trim to add this case in this error
+        throw new ApiError(400,"username doesnot exist")
+    }
+
+    // aggrigate pipeline it takes array {} (these are different pipelines)
+  const  channel = await User.aggregate([
+
+    //finding out which channel user is subscribed
+    {
+        $match:{
+            username:username?.toLowerCase()  //chai aur code now have to find subscriber 
+        }
+    },
+
+    //how many subscribers exist to this particular username
+    {
+        $lookup:{
+            from:"subscription",//name of collection to join,db automatically convert collection to lowercase
+            localField:"_id",
+            foreignField:"channel",
+            as:"subscribers" //name of the output array
+        }
+    },
+
+    //how many i subscribed
+    {
+        $lookup:{
+            from:"subscription",
+            localField:"_id",
+            foreignField:"subscriber",
+            as:"subscribedTo "
+        }
+    },
+
+    //adding addional fields
+    {
+        $addFields:{
+            subscribersCount:{
+                $size:"$subscribers" //since its a field add $
+            },
+            channelsSubscribedToCount:{
+                $size:"subscribedTo"
+            },
+            isSubscribed:{
+                $cond:{
+                    //$in calculate both array and object
+                    if:{$in:[req.user?._id,"$subscribers.subscriber"]}
+                }
+            }
+        }
+    },
+    //only thesesecelted fileds we want to pass formard
+    {
+        $project:{
+            fullName: 1,
+            username: 1,
+            subscribersCount: 1,
+            channelsSubscribedToCount: 1,
+            isSubscribed: 1,
+            avatar: 1,
+            coverImage: 1,
+            email: 1
+        }
+    }
+   ])
+
+   if(channel?.length){
+    throw new ApiError("401","channel does not exist")
+   }
+
+   return res
+   .status(200)
+   .json(new ApiResponse(200,channel[0],"user channel fetched successfully"))
+})
+
 export {
     registerUser,
     loginUser,
@@ -343,5 +425,6 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUsercoverImage
+    updateUsercoverImage,
+    getUserChannelprofile
 }
