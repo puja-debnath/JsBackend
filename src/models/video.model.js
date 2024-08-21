@@ -46,4 +46,5 @@ const VideoSchema = new Schema({
 )  
 
  VideoSchema.plugin(mongoAggrigatePerinate)
-export const Video = mongoose.model("Video", VideoSchema)
+
+export const Videos = mongoose.model("Video", VideoSchema)
