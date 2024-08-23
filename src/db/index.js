@@ -7,7 +7,7 @@ const ConnectDB = async () =>{
     console.log(`/n mongodb connected , DB host: ${connectionLine.connection.host}`)
   }
   catch(error){
-  console.log("mongodb connection ",error)
+  console.log("mongodb connection aborted ",error)
   process.exit(1)
   }
 }
@@ -34,3 +34,4 @@ export default ConnectDB
 // })()
 
 //everything is here ,   for readbility separate them in db  
+

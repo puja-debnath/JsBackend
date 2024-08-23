@@ -3,10 +3,12 @@ class ApiError extends Error{
        statusCode,
        message="something went WRONG",
        errors=[], // if there are multiple error use array
+       stack= ""
       // The stack property contains a stack trace of the error,
        // which is useful for debugging. It shows the sequence of function calls that led to the error,
-       stack= ""
-    ){
+       
+    )
+    {
         super(message)  //  which we want to override
         this.statusCode = statusCode,
         this.success = false,
@@ -15,7 +17,7 @@ class ApiError extends Error{
         this.errors = errors
 
 
-        //to find in which file there is error 
+        //to find in which file error exist
         if(stack){
            this.stack = stack
         }else{
